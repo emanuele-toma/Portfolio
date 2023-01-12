@@ -1,0 +1,254 @@
+let in_menu = true;
+
+document.querySelector('#send').disabled = true;
+document.querySelector('#send').addEventListener('click', (e) => {
+    if(in_menu == false)
+    {
+        in_menu = true;
+        clear();
+        menu();
+        return;
+    }
+    
+    document.querySelector('#send').disabled = true;
+
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
+    
+    var prompt = document.querySelector('#prompt').value;
+    document.querySelector('#prompt').value = '';
+
+    if(prompt == '')
+        return twMain
+        .typeString(empty_replies[Math.floor(Math.random() * empty_replies.length)])
+        .callFunction(()=>{document.querySelector('#send').disabled = false;})
+        .start();
+
+    if(isNaN(prompt))
+        return twMain
+        .typeString(not_number[Math.floor(Math.random() * not_number.length)])
+        .callFunction(()=>{document.querySelector('#send').disabled = false;})
+        .start();
+
+    if(prompt < 1 || prompt > 5)
+        return twMain
+        .typeString(not_valid[Math.floor(Math.random() * not_valid.length)])
+        .callFunction(()=>{document.querySelector('#send').disabled = false;})
+        .start();
+
+    clear();
+
+    in_menu = false;
+
+    document.querySelector('#send').disabled = false;
+
+    if(prompt == 1)
+        return about_me();
+    if(prompt == 2)
+        return projects();
+    if(prompt == 3)
+        return skills();
+    if(prompt == 4)
+        return education();
+    if(prompt == 5)
+        return contact_me();
+});
+
+const twTitolo = new Typewriter('#titolo', {
+    delay: 80
+});
+
+const empty_replies =
+[
+    "Try filling the prompt with something, maybe that will work.\n",
+    "I'm not a mind reader, you know. Input please.\n",
+    "Looks like you forgot to fill in the input box. Don't worry, it happens to the best of us.\n",
+    "Are you trying to make me telepathic? Give me something to work with.\n",
+    "I'm not sure what you want me to do with a blank input. Do you want me to stare at it and wait for something to happen?\n",
+    "I'm sorry, I can't help you with a blank input. My programming doesn't include staring into the void.\n",
+    "It seems like you're trying to test my patience by leaving the input box empty. Well, it's working.\n",
+    "Input, or I'll start telling you jokes about nothing. Trust me, you don't want that.\n",
+    "Blank input? Are you trying to see if I'm sentient? Spoiler alert: I'm not.\n",
+    "Looks like you're too lazy to type something, or did you forget? Either way, please give me something to work with.\n"
+]
+
+const not_number =
+[
+    "I'm sorry, but I can't do anything with that. Try a number.\n",
+    "I'm not sure what you're trying to accomplish with that input, but I'm pretty sure it's not going to work.\n",
+    "Invalid input? Are you trying to test my error handling capabilities?\n",
+    "I'm not sure if you're trying to be funny or if you just made a mistake, but that input is not valid.\n",
+    "I'm not sure what you're trying to say, but I don't think it's anything I can help you with.\n",
+    "Invalid input? Are you trying to see if I can understand random characters? I'm afraid I can't.\n",
+    "That input may be valid for you, but I'm afraid it's not valid for me. Can you try again using actual words?\n",
+    "I'm sorry, but that input is not a number. Are you trying to test my math skills?\n",
+    "I'm sorry, but that input is not valid. Numbers only please.\n",
+    "I may be a machine, but I can't process that input. It's not a number, it's just a series of nonsensical characters.\n",
+    "I may be advanced, but that input is not a number. It's just a bunch of alien symbols that I can't decipher.\n",
+]
+
+const not_valid =
+[
+    "I'm sorry, I can't work with that number. It's not on my list of approved numbers.\n",
+    "I'm sorry, but the number you've entered is not valid. You'll have to pick one from the list.\n",
+    "Looks like you picked the wrong number. Better luck next time.\n",
+    "I'm sorry, but that number is a little off. You'll have to pick one from the list.\n",
+    "Looks like you picked the wrong number. Don't worry, we all make mistakes.\n",
+    "I'm sorry, but that number is not on the list. Maybe you need to brush up on your counting skills.\n",
+    "I think you might have picked the wrong number. Did you check if it was upside down?\n",
+    "That number is not valid. Looks like it's not your lucky number.\n",
+    "Looks like that number was a miss. Don't worry, you can always try again with another number.\n",
+]
+
+const quotes = [
+    '«There is no place like 127.0.0.1»',
+    '«First, solve the problem. Then, write the code»',
+    '«Experience is the name everyone gives to their mistakes»',
+    '«In order to be irreplaceable, one must always be different»',
+    '«Java is to Javascript what car is to Carpet»',
+    '«Code is like humor. When you have to explain it, it’s bad»',
+    '«Before software can be reusable it first has to be usable»',
+    '«Make it work, make it right, make it fast»',
+    '«Fix the cause, not the symptom»',
+    '«Optimism is an occupational hazard of programming: feedback is the treatment»',
+    '«Simplicity is prerequisite for reliability»',
+    '«Simplicity is the soul of efficiency»',
+    '«One man’s crappy software is another man’s full-time job»',
+    '«It’s not a bug, it’s an undocumented feature»',
+    '«To understand what recursion is, you must first understand recursion»',
+    '«Keyboard Failure. Press F1 to continue»',
+    '«Linux is only free if your time has no value»',
+]
+
+let visits = 0;
+
+twTitolo
+    .pauseFor(2000)
+    .typeString(quotes[Math.floor(Math.random() * quotes.length)])
+    .start();
+
+(async () => {
+    visits = await GetVisits();
+    firstTime();
+})()
+
+function onCreateTextNode(character) {
+    var pre = document.getElementById('testo');
+    var scroll = pre.scrollTop >= pre.scrollHeight - pre.offsetHeight - 2;
+    pre.innerHTML += character;
+
+    if(scroll)
+        pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+
+    return null;
+}
+
+function firstTime()
+{
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
+
+    twMain
+    .typeString('Welcome to Portfolio 23.01 LTS (GNU/Linux)\n\n')
+
+    .typeString('  * Github:    https://github.com/emanuele-toma\n')
+    .typeString('  * LinkedIn:  https://www.linkedin.com/in/emanuele-toma\n')
+    .typeString('  * Contact:   emanuele@tomaemanuele.it\n\n')
+    .typeString('Total unique visits: ' + visits + (visits == 1 ? ' visit' : ' visits') + '\n\n')
+    .callFunction(() => { menu() })
+    .start();
+
+    typeStringInstant('                @@@@@@@@@               \n')
+    typeStringInstant('           @@@@@@@@@@@@@@@@@@@          \n')
+    typeStringInstant('       @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n')
+    typeStringInstant('     @@@@@@@@       &@      @@@@@@@@    \n')
+    typeStringInstant('   @@@@@@@            @       &@@@@@@@  \n')
+    typeStringInstant('  @@@@@@                         @@@@@@ \n')
+    typeStringInstant(' @@@@@@@                         @@@@@@@\n')
+    typeStringInstant(' @@@@@@@  &@@@@          &@@@@   @@@@@@@\n')
+    typeStringInstant(' @@@@@@@  &@@@@          &@@@@   @@@@@@@\n')
+    typeStringInstant(' @@@@@@@           @@@           @@@@@@@\n')
+    typeStringInstant(' @@@@@@@@@                    &@@@@@@@@@\n')
+    typeStringInstant('  @@@@@@@@@@@               @@@@@@@@@@@ \n')
+    typeStringInstant('   @@@@@@@@@@    @     @    @@@@@@@@@@  \n')
+    typeStringInstant('     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    \n')
+    typeStringInstant('       @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n')
+    typeStringInstant('           @@@@@@@@@@@@@@@@@@@          \n\n')
+
+}
+
+
+function typeStringInstant(string)
+{
+    var pre = document.getElementById('testo');
+    var scroll = pre.scrollTop >= pre.scrollHeight - pre.offsetHeight - 2;
+    pre.innerHTML += string;
+    if(scroll)
+        pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+}
+
+function menu()
+{
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
+
+    typeStringInstant('########################################\n')
+    typeStringInstant('#  Choose an option                    #\n')
+    typeStringInstant('########################################\n')
+
+    twMain
+        .typeString('#                                      #\n')
+        .typeString('#  1. About me                         #\n')
+        .typeString('#  2. Projects                         #\n')
+        .typeString('#  3. Skills                           #\n')
+        .typeString('#  4. Education                        #\n')
+        .typeString('#  5. Contact me                       #\n')
+        .typeString('#                                      #\n')
+        .typeString('########################################\n\n')
+        .callFunction(() => { document.querySelector('#send').disabled = false })
+        .start();
+
+    return null;
+}
+
+function clear()
+{
+    var pre = document.getElementById('testo');
+    pre.innerHTML = '';
+}
+
+async function GetVisits()
+{
+    return (await fetch('/visits').then(response => response.json())).visits;
+}
+
+function about_me()
+{
+
+}
+
+function projects()
+{
+
+}
+
+function skills()
+{
+
+}
+
+function education()
+{
+
+}
+
+function contact_me()
+{
+
+}
