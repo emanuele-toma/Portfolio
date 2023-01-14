@@ -151,7 +151,7 @@ twTitolo
         {
             // add event listener to the body to listen for the F1 key
             document.body.addEventListener("keydown", function(e) {
-                if(document.getElementsByClassName("bg-black")[0].innerText == "«You know that was just a joke right?»")
+                if(document.getElementsByClassName("bg-black")[0].innerText != "«Keyboard Failure. Press F1 to continue»")
                     return;
                 
                 if (e.key == "F1") {
