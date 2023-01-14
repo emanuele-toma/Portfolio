@@ -1,10 +1,11 @@
 const factory = dotsAnim.DotsAnimationFactory;
 const options = {
     blur: 0,
-    density: 0.0001,
+    density: 0.00005,
     onClickMove: false,
     onHoverMove: false,
     colorsFill: ["#ffffff", "#d0ffd0", "#a0ffa0"],
+    expectedFps: 24,
 };
 const animationControl = factory
   .createAnimation("#background", "id-for-new-canvas", options);
@@ -13,8 +14,19 @@ animationControl.start();
 
 let in_menu = true;
 
+document.querySelector('#prompt').addEventListener('click', (e) => {
+    var pre = document.getElementById('testo');
+    pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+    setTimeout(() => {
+        pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+    }, 200);
+});
+
 document.querySelector('#send').disabled = true;
 document.querySelector('#send').addEventListener('click', (e) => {
+    var prompt = document.querySelector('#prompt').value;
+    document.querySelector('#prompt').value = '';
+    
     if(in_menu == false)
     {
         in_menu = true;
@@ -30,24 +42,21 @@ document.querySelector('#send').addEventListener('click', (e) => {
         onCreateTextNode: onCreateTextNode
     });
     
-    var prompt = document.querySelector('#prompt').value;
-    document.querySelector('#prompt').value = '';
-
     if(prompt == '')
         return twMain
-        .typeString(empty_replies[Math.floor(Math.random() * empty_replies.length)])
+        .typeString(empty_replies[Math.floor(Math.random() * empty_replies.length)] + "\n")
         .callFunction(()=>{document.querySelector('#send').disabled = false;})
         .start();
 
     if(isNaN(prompt))
         return twMain
-        .typeString(not_number[Math.floor(Math.random() * not_number.length)])
+        .typeString(not_number[Math.floor(Math.random() * not_number.length)] + "\n")
         .callFunction(()=>{document.querySelector('#send').disabled = false;})
         .start();
 
     if(prompt < 1 || prompt > 5)
         return twMain
-        .typeString(not_valid[Math.floor(Math.random() * not_valid.length)])
+        .typeString(not_valid[Math.floor(Math.random() * not_valid.length)] + "\n")
         .callFunction(()=>{document.querySelector('#send').disabled = false;})
         .start();
 
@@ -56,6 +65,9 @@ document.querySelector('#send').addEventListener('click', (e) => {
     in_menu = false;
 
     document.querySelector('#send').disabled = false;
+
+    if(prompt >= 1 && prompt <= 5)
+        document.querySelector('#send').disabled = true;
 
     if(prompt == 1)
         return about_me();
@@ -136,7 +148,7 @@ const quotes = [
     "«I'm not anti-social; I'm just not user friendly»",
     "«I've got a really good UDP joke to tell you, but i don't know if you'll get it»",
     "«I have a joke about Stack Overflow, but you would say it's a duplicate»",
-    "«// This line doesn't actually do anything, but the code stops working when I delete it»",
+    //"«// This line doesn't actually do anything, but the code stops working when I delete it»",
 ]
 
 let visits = 0;
@@ -145,11 +157,9 @@ twTitolo
     .pauseFor(2000)
     .typeString("<span class=\"bg-black\">" + quotes[Math.floor(Math.random() * quotes.length)] + "</span>")
     .callFunction(() => {
-        // get the quote
         var quote = document.getElementsByClassName("bg-black")[0].innerText;
         if(quote == "«Keyboard Failure. Press F1 to continue»")
         {
-            // add event listener to the body to listen for the F1 key
             document.body.addEventListener("keydown", function(e) {
                 if(document.getElementsByClassName("bg-black")[0].innerText != "«Keyboard Failure. Press F1 to continue»")
                     return;
@@ -267,25 +277,71 @@ async function GetVisits()
 
 function about_me()
 {
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
 
+    twMain
+    .typeString("Welcome to the 'About Me' page! Unfortunately, it looks like the developer is still working on filling out their own information. In the meantime, why not take a guess at what their favorite color is or what their spirit animal might be? Bonus points if you get both right!\n")
+    .typeString("If you want to navigate around the website, you can always type a random character and hope for the best, Just like the developer does with their code")
+    .callFunction(() => { document.querySelector('#send').disabled = false })
+    .start();
 }
 
 function projects()
 {
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
 
+    twMain
+    .typeString("Welcome to the 'Projects' page! Unfortunately, it looks like the developer is still working on their portfolio. Maybe they're too busy coding to update it? In the meantime, feel free to browse the source code of your dreams.\n")
+    .typeString("Stuck on this page? Don't worry, just fill the box below and see where it takes you! It's like a digital Choose Your Own Adventure.")
+    .callFunction(() => { document.querySelector('#send').disabled = false })
+    .start();
 }
 
 function skills()
 {
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
 
+    twMain
+    .typeString("Welcome to the 'Skills' page! Unfortunately, it looks like the developer is still working on updating their skillset. Maybe they're too busy learning new things to write them down? In the meantime, you can test your own skills by trying to guess how many programming languages they know.\n")
+    .typeString("Not sure where to go next? Just write something and see were you end up!")
+    .callFunction(() => { document.querySelector('#send').disabled = false })
+    .start();
 }
 
 function education()
 {
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
 
+    twMain
+    .typeString("Welcome to the 'Education' page! Unfortunately, it looks like the developer is still working on adding their education history. Maybe they're too busy attending coding bootcamps to update it? In the meantime, you can take a guess at what school they went to or what degree they have.\n")
+    .typeString("Feeling lost? Just write a bunch of characters and let the website take you on a journey!")
+    .callFunction(() => { document.querySelector('#send').disabled = false })
+    .start();
 }
 
 function contact_me()
 {
+    var twMain = new Typewriter(null, {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode
+    });
 
+    twMain
+    .typeString("Welcome to the 'Contact Me' page! Unfortunately, it looks like the developer is still working on adding their contact information. Maybe they're too busy coding to answer their phone? In the meantime, you can try sending a message to their email address and hope for the best.\n")
+    .typeString("Can't find the menu? Just type something and let the website be your guide!")
+    .callFunction(() => { document.querySelector('#send').disabled = false })
+    .start();
+    
 }
