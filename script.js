@@ -1,3 +1,16 @@
+const factory = dotsAnim.DotsAnimationFactory;
+const options = {
+    blur: 0,
+    density: 0.0001,
+    onClickMove: false,
+    onHoverMove: false,
+    colorsFill: ["#ffffff", "#d0ffd0", "#a0ffa0"],
+};
+const animationControl = factory
+  .createAnimation("#background", "id-for-new-canvas", options);
+animationControl.start();
+
+
 let in_menu = true;
 
 document.querySelector('#send').disabled = true;
@@ -103,30 +116,54 @@ const not_valid =
 ]
 
 const quotes = [
-    '«There is no place like 127.0.0.1»',
-    '«First, solve the problem. Then, write the code»',
-    '«Experience is the name everyone gives to their mistakes»',
-    '«In order to be irreplaceable, one must always be different»',
-    '«Java is to Javascript what car is to Carpet»',
-    '«Code is like humor. When you have to explain it, it’s bad»',
-    '«Before software can be reusable it first has to be usable»',
-    '«Make it work, make it right, make it fast»',
-    '«Fix the cause, not the symptom»',
-    '«Optimism is an occupational hazard of programming: feedback is the treatment»',
-    '«Simplicity is prerequisite for reliability»',
-    '«Simplicity is the soul of efficiency»',
-    '«One man’s crappy software is another man’s full-time job»',
-    '«It’s not a bug, it’s an undocumented feature»',
-    '«To understand what recursion is, you must first understand recursion»',
-    '«Keyboard Failure. Press F1 to continue»',
-    '«Linux is only free if your time has no value»',
+    "«There is no place like 127.0.0.1»",
+    "«First, solve the problem. Then, write the code»",
+    "«Experience is the name everyone gives to their mistakes»",
+    "«In order to be irreplaceable, one must always be different»",
+    "«Java is to Javascript what car is to Carpet»",
+    "«Code is like humor. When you have to explain it, it's bad»",
+    "«Make it work, make it right, make it fast»",
+    "«Fix the cause, not the symptom»",
+    "«Optimism is an occupational hazard of programming: feedback is the treatment»",
+    "«One man's crappy software is another man's full-time job»",
+    "«It's not a bug, it's an undocumented feature»",
+    "«To understand what recursion is, you must first understand recursion»",
+    "«Keyboard Failure. Press F1 to continue»",
+    "«Linux is only free if your time has no value»",
+    "«Debugging is like being a detective in a crime movie where you're also the murderer»",
+    "«Computers make very fast and very accurate mistakes»",
+    "«My software never has bugs. It just develops random features»",
+    "«I'm not anti-social; I'm just not user friendly»",
+    "«I've got a really good UDP joke to tell you, but i don't know if you'll get it»",
+    "«I have a joke about Stack Overflow, but you would say it's a duplicate»",
+    "«// This line doesn't actually do anything, but the code stops working when I delete it»",
 ]
 
 let visits = 0;
 
 twTitolo
     .pauseFor(2000)
-    .typeString(quotes[Math.floor(Math.random() * quotes.length)])
+    .typeString("<span class=\"bg-black\">" + quotes[Math.floor(Math.random() * quotes.length)] + "</span>")
+    .callFunction(() => {
+        // get the quote
+        var quote = document.getElementsByClassName("bg-black")[0].innerText;
+        if(quote == "«Keyboard Failure. Press F1 to continue»")
+        {
+            // add event listener to the body to listen for the F1 key
+            document.body.addEventListener("keydown", function(e) {
+                if(document.getElementsByClassName("bg-black")[0].innerText == "«You know that was just a joke right?»")
+                    return;
+                
+                if (e.key == "F1") {
+                    e.preventDefault();
+                    document.getElementsByClassName("bg-black")[0].innerText = "";
+                    twTitolo
+                    .typeString("<span class=\"bg-black\">Looks like you pressed F1, but it dind't fix the problem. Maybe try using the power button instead?</span>")
+                    .start();
+                }
+            });
+        }
+    })
     .start();
 
 (async () => {
