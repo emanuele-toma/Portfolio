@@ -26,6 +26,7 @@ document.querySelector('#send').disabled = true;
 document.querySelector('#send').addEventListener('click', (e) => {
     var prompt = document.querySelector('#prompt').value;
     document.querySelector('#prompt').value = '';
+    document.querySelector('#send').disabled = true;
     
     if(in_menu == false)
     {
@@ -34,8 +35,6 @@ document.querySelector('#send').addEventListener('click', (e) => {
         menu();
         return;
     }
-    
-    document.querySelector('#send').disabled = true;
 
     var twMain = new Typewriter(null, {
         delay: 0,
