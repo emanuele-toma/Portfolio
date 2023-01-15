@@ -10,7 +10,10 @@ const fs = require('fs');
 GetVisits = JSON.parse(fs.readFileSync('count.json', 'utf8')).visits;
 
 app.use(session({
-    expires: new Date(253402300000000),
+    cookie:
+    {
+        maxAge: 1000 * 60 * 60 * 24 * 365
+    },
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -27,9 +30,8 @@ app.get('/', (req, res) => {
     {
         GetVisits++;
         req.session.visited = true;
+        fs.writeFileSync('count.json', JSON.stringify({visits: GetVisits}, null, 4))
     }
-
-    fs.writeFileSync('count.json', JSON.stringify({visits: GetVisits}, null, 4))
 });
 
 app.get('/visits', (req, res) => {
