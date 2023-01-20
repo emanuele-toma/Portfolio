@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="style/style.css">
 
     <!-- Script -->
+    <script src="scripts/snake.js"></script>
     <script src="scripts/bootstrap.bundle.min.js"></script>
     <script src="scripts/typewriter.effect.core.js"></script>
     <script src="scripts/dots.animation.umd.min.js"></script>
@@ -34,13 +35,29 @@
                 <div class="border border-lime border-5 bg-black text-lime pt-5  rounded">
                     <pre class="lucida-console half-height text-break px-4 mx-4" id="testo"></pre>
                     
-                    <form onsubmit="return false">
+                    <div id="controller" class="d-flex justify-content-center d-none mb-5">
+                        <button id="btn-controller-left" class="btn border-lime border-2 rounded text-lime mx-2 pt-2">
+                            <i class="material-icons">keyboard_arrow_left</i>
+                        </button>
+                        <button id="btn-controller-up" class="btn border-lime border-2 rounded text-lime mx-2 pt-2">
+                            <i class="material-icons">keyboard_arrow_up</i>
+                        </button>
+                        <button id="btn-controller-down" class="btn border-lime border-2 rounded text-lime mx-2 pt-2">
+                            <i class="material-icons">keyboard_arrow_down</i>
+                        </button>
+                        <button id="btn-controller-right" class="btn border-lime border-2 rounded text-lime mx-2 pt-2">
+                            <i class="material-icons">keyboard_arrow_right</i>
+                        </button>
+                    </div>
+
+                    <form id="form" onsubmit="return false" class="">
                         <div class="input-group my-5 border-1 px-5">
                             <span class="input-group-text text-lime bg-black border-lime lucida-console d-none d-sm-none d-md-flex" id="basic-addon1">user@tomaemanuele.it:~$ </span>
                             <input id="prompt" type="text" class="form-control text-lime bg-black border-lime lucida-console" aria-describedby="basic-addon1" autofocus autocomplete="off">
-                            <button id="send" type="submit" class="btn text-lime border-lime" type="button" disabled="disabled"><span class="material-symbols-sharp">send</span></button>
+                            <button id="send" type="submit" class="btn text-lime border-lime" type="button" disabled="disabled"><i class="material-icons">send</i></button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>

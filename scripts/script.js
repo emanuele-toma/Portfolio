@@ -1,3 +1,44 @@
+  ///////////////
+ //   SNAKE   //
+///////////////
+
+
+const _snake = new Snake(document.querySelector('#testo'));
+
+document.querySelector('#btn-controller-up').addEventListener('click', (e) => {
+    _snake.Up();
+});
+
+document.querySelector('#btn-controller-down').addEventListener('click', (e) => {
+    _snake.Down();
+});
+
+document.querySelector('#btn-controller-left').addEventListener('click', (e) => {
+    _snake.Left();
+});
+
+document.querySelector('#btn-controller-right').addEventListener('click', (e) => {
+    _snake.Right();
+});
+
+function snake()
+{
+    document.getElementById("form").classList.add("d-none");
+    document.getElementById("controller").classList.remove("d-none");
+    _snake.Start();
+    
+    _snake.onGameOver = () => {
+        document.getElementById("controller").classList.add("d-none");
+        document.getElementById("form").classList.remove("d-none");
+    }
+}
+
+
+  ///////////////
+ //   DOTS    //
+///////////////
+
+
 const factory = dotsAnim.DotsAnimationFactory;
 const options = {
     blur: 0,
@@ -11,6 +52,9 @@ const animationControl = factory
   .createAnimation("#background", "id-for-new-canvas", options);
 animationControl.start();
 
+  ///////////////
+ //   MENU    //
+///////////////
 
 let in_menu = true;
 
@@ -23,11 +67,21 @@ document.querySelector('#prompt').addEventListener('click', (e) => {
 });
 
 document.querySelector('#send').disabled = true;
+
 document.querySelector('#send').addEventListener('click', (e) => {
     var prompt = document.querySelector('#prompt').value;
     document.querySelector('#prompt').value = '';
     document.querySelector('#send').disabled = true;
     
+    // if prompt is snake, start snake game
+    if(prompt == 'snake')
+    {
+        clear();
+        in_menu = false;
+        document.querySelector('#send').disabled = false;
+        return snake();
+    }
+
     if(in_menu == false)
     {
         in_menu = true;
@@ -95,7 +149,8 @@ const empty_replies =
     "It seems like you're trying to test my patience by leaving the input box empty. Well, it's working.\n",
     "Input, or I'll start telling you jokes about nothing. Trust me, you don't want that.\n",
     "Blank input? Are you trying to see if I'm sentient? Spoiler alert: I'm not.\n",
-    "Looks like you're too lazy to type something, or did you forget? Either way, please give me something to work with.\n"
+    "Looks like you're too lazy to type something, or did you forget? Either way, please give me something to work with.\n",
+    "Instead of leaving the input box empty, why don't you try playing snake? Just type 'snake' to play!.\n",
 ]
 
 const not_number =
@@ -111,6 +166,7 @@ const not_number =
     "I'm sorry, but that input is not valid. Numbers only please.\n",
     "I may be a machine, but I can't process that input. It's not a number, it's just a series of nonsensical characters.\n",
     "I may be advanced, but that input is not a number. It's just a bunch of alien symbols that I can't decipher.\n",
+    "Well, that's not a number. Bored yet? Try playing snake! Just type 'snake' to play!.\n"
 ]
 
 const not_valid =
@@ -124,6 +180,7 @@ const not_valid =
     "I think you might have picked the wrong number. Did you check if it was upside down?\n",
     "That number is not valid. Looks like it's not your lucky number.\n",
     "Looks like that number was a miss. Don't worry, you can always try again with another number.\n",
+    "That number is a bit off. If you don't want to pick one from the list, you can always play snake! Just type 'snake' to play!.\n"
 ]
 
 const quotes = [
@@ -341,6 +398,5 @@ function contact_me()
     .typeString("Welcome to the 'Contact Me' page! Unfortunately, it looks like the developer is still working on adding their contact information. Maybe they're too busy coding to answer their phone? In the meantime, you can try sending a message to their email address and hope for the best.\n")
     .typeString("Can't find the menu? Just type something and let the website be your guide!")
     .callFunction(() => { document.querySelector('#send').disabled = false })
-    .start();
-    
+    .start();   
 }
