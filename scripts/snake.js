@@ -12,6 +12,9 @@ class Snake
     down = false;
     right = true;
     left = false;
+    direction = 'right';
+
+    skipOnce = true;
 
     gameover = false;
     win = false;
@@ -28,6 +31,9 @@ class Snake
     }
 
     onGameOver = null;
+    onDirectionChange = null;
+
+    previousDirection = null;
 
     Start()
     {
@@ -77,6 +83,15 @@ class Snake
             this.Check();
             this.Draw();
 
+            if(this.up)
+                this.direction = 'up';
+            if(this.down)
+                this.direction = 'down';
+            if(this.right)
+                this.direction = 'right';
+            if(this.left)
+                this.direction = 'left';
+
             if (this.gameover)
             {
                 clearInterval(this.interval);
@@ -107,6 +122,7 @@ class Snake
                 if (this.onGameOver != null && typeof this.onGameOver == 'function')
                 {
                     this.onGameOver();
+                    this.onDirectionChange = null;
                     this.onGameOver = null;
                 }
             }
@@ -185,6 +201,23 @@ class Snake
 
     Move()
     {
+        if (this.skipOnce)
+        {
+            var collideUp = this.up && (this.snake[0].y - 1 == 0 || this.map[this.snake[0].y - 1][this.snake[0].x] == '#');
+            var collideDown = this.down && (this.snake[0].y + 1 == this.rows - 1 || this.map[this.snake[0].y + 1][this.snake[0].x] == '#');
+            var collideLeft = this.left && (this.snake[0].x - 1 == 0 || this.map[this.snake[0].y][this.snake[0].x - 1] == '#');
+            var collideRight = this.right && (this.snake[0].x + 1 == this.columns - 1 || this.map[this.snake[0].y][this.snake[0].x + 1] == '#');
+
+            if (collideUp || collideDown || collideLeft || collideRight)
+            {
+                this.skipOnce = false;
+                return;
+            }
+        }
+
+        this.skipOnce = true;
+
+
         if (this.addSegment)
         {
             this.addSegment = false;
@@ -227,46 +260,67 @@ class Snake
 
     Up()
     {
-        if (this.down)
+        if (this.down || this.direction == 'down')
             return;
 
         this.up = true;
         this.down = false;
         this.right = false;
         this.left = false;
+
+        if(typeof this.onDirectionChange == 'function' && this.previousDirection != 'up')
+            this.onDirectionChange('up');
+
+
+        this.previousDirection = 'up';
     }
 
     Down()
     {
-        if (this.up)
+        if (this.up || this.direction == 'up')
             return;
 
         this.up = false;
         this.down = true;
         this.right = false;
         this.left = false;
+
+        if(typeof this.onDirectionChange == 'function' && this.previousDirection != 'down')
+            this.onDirectionChange('down');
+
+        this.previousDirection = 'down';
     }
 
     Left()
     {
-        if (this.right)
+        if (this.right || this.direction == 'right')
             return;
 
         this.up = false;
         this.down = false;
         this.right = false;
         this.left = true;
+
+        if(typeof this.onDirectionChange == 'function' && this.previousDirection != 'left')
+            this.onDirectionChange('left');
+
+        this.previousDirection = 'left';
     }
 
     Right()
     {
-        if (this.left)
+        if (this.left || this.direction == 'left')
             return;
 
         this.up = false;
         this.down = false;
         this.right = true;
         this.left = false;
+
+        if(typeof this.onDirectionChange == 'function' && this.previousDirection != 'right')
+            this.onDirectionChange('right');
+
+        this.previousDirection = 'right';
     }
 
     GenerateFood()
@@ -377,12 +431,13 @@ class Snake
 
     calcSpeed(x)
     {
-        const max = 250;
-        var min = 50;
+        const max = 300;
+        var min = 150;
 
         min = max - min;
 
         const k = 500;
+
         return max - min/(1 + k / x)
     }
 }

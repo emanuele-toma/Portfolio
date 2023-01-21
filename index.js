@@ -20,8 +20,8 @@ app.use(session({
     store: new JsonStore(),
 }))
 
-app.listen(80, () => {
-    console.log('Portfolio in ascolto su porta 80');
+app.listen(process.env.SERVER_PORT, () => {
+    console.log('Portfolio in ascolto su porta ' + process.env.SERVER_PORT);
 })
 
 app.get('/', (req, res) => {

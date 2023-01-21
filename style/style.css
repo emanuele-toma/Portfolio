@@ -37,6 +37,11 @@
     font-family: 'Lucida Console', Monaco, monospace;
 }
 
+.no-fade:hover
+{
+    color: initial !important;
+}
+
 #titolo
 {
     user-select: none;
