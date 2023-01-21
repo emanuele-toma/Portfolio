@@ -4,36 +4,41 @@
     ///////////////
     //   SNAKE   //
     ///////////////
+    var _snake = null;
 
-
-    const _snake = new Snake(document.querySelector('#testo'));
-
-    document.querySelector('#btn-controller-up').addEventListener('click', (e) => {
+    function _snakeUp(e) {
         _snake.Up();
-    });
+    }
 
-    document.querySelector('#btn-controller-down').addEventListener('click', (e) => {
+    function _snakeDown(e) {
         _snake.Down();
-    });
+    }
 
-    document.querySelector('#btn-controller-left').addEventListener('click', (e) => {
+    function _snakeLeft(e) {
         _snake.Left();
-    });
+    }
 
-    document.querySelector('#btn-controller-right').addEventListener('click', (e) => {
+    function _snakeRight(e) {
         _snake.Right();
-    });
-
+    }
 
     function snake() {
+        _snake = new Snake(document.querySelector('.tw_testo'));
+
+        document.querySelector('#btn-controller-up').addEventListener('click', _snakeUp);
+        document.querySelector('#btn-controller-down').addEventListener('click', _snakeDown);
+        document.querySelector('#btn-controller-left').addEventListener('click', _snakeLeft);
+        document.querySelector('#btn-controller-right').addEventListener('click', _snakeRight);
+
         document.getElementById("form").classList.add("d-none");
         document.getElementById("controller").classList.remove("d-none");
-        document.querySelector('#testo').innerHTML = 'Loading sssnek...';
+        twMain.pasteString('Loading sssnek...');
+        twMain.start();
 
         setTimeout(() => {
             _snake.Start();
 
-            _snake.onGameOver = async () => {
+            _snake.onGameOver = async (score, win) => {
                 var buttons = document.querySelectorAll('#controller > div > button');
 
                 for (var i = 0; i < buttons.length; i++) {
@@ -42,7 +47,37 @@
                 }
 
                 document.getElementById("controller").classList.add("d-none");
+
+                document.querySelector('#btn-controller-up').removeEventListener('click', _snakeUp);
+                document.querySelector('#btn-controller-down').removeEventListener('click', _snakeDown);
+                document.querySelector('#btn-controller-left').removeEventListener('click', _snakeLeft);
+                document.querySelector('#btn-controller-right').removeEventListener('click', _snakeRight);
+
                 document.getElementById("form").classList.remove("d-none");
+
+                clearTesto();
+
+                if (win)
+                    twMain.pasteString("Congratulations! You won!\n");
+                else
+                    twMain.pasteString("Game Over\n");
+
+                var highscore = localStorage.getItem('snake_highscore');
+                var previousScore = highscore;
+                if (highscore == null || highscore < score) {
+                    localStorage.setItem('snake_highscore', score);
+                    twMain.pasteString("\nNew highscore!");
+                    twMain.pasteString("\nPrevious highscore: " + previousScore);
+                } else {
+                    twMain.pasteString("\nHighscore: " + localStorage.getItem('snake_highscore'));
+                }
+
+                twMain.pasteString("\nCurrent score: " + score);
+                twMain.pasteString("\n\nInsert coin to continue...");
+                twMain.pasteString("\nJust kidding, type 'snake' to play again\n");
+                twMain.pasteString("\nOr type anything else to exit...\n");
+                twMain.start();
+
             }
 
             _snake.onDirectionChange = async (direction) => {
@@ -104,7 +139,7 @@
 
         // if prompt is snake, start snake game
         if (prompt == 'snake') {
-            clear();
+            clearTesto();
             in_menu = false;
             document.querySelector('#send').disabled = false;
             return snake();
@@ -112,15 +147,10 @@
 
         if (in_menu == false) {
             in_menu = true;
-            clear();
+            clearTesto();
             menu();
             return;
         }
-
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
 
         if (prompt == '')
             return twMain
@@ -140,7 +170,7 @@
                 .callFunction(() => { document.querySelector('#send').disabled = false; })
                 .start();
 
-        clear();
+        clearTesto();
 
         in_menu = false;
 
@@ -162,7 +192,9 @@
     });
 
     const twTitolo = new Typewriter('#titolo', {
-        delay: 80
+        delay: 80,
+        wrapperClassName: 'tw_titolo',
+        cursorClassName: 'tw_cursor',
     });
 
     const empty_replies =
@@ -237,7 +269,6 @@
     let visits = 0;
 
     twTitolo
-        .pauseFor(2000)
         .typeString("<span class=\"bg-black\">" + quotes[Math.floor(Math.random() * quotes.length)] + "</span>")
         .callFunction(() => {
             var quote = document.getElementsByClassName("bg-black")[0].innerText;
@@ -263,89 +294,77 @@
         firstTime();
     })()
 
+    var twMain = new Typewriter('#testo', {
+        delay: 0,
+        onCreateTextNode: onCreateTextNode,
+        wrapperClassName: "tw_testo",
+        cursorClassName: "tw_cursor",
+    });
+
     function onCreateTextNode(character, textnode) {
         var pre = document.getElementById('testo');
-        var scroll = pre.scrollTop >= pre.scrollHeight - pre.offsetHeight - 2;
-        pre.appendChild(textnode);
+        var scroll = pre.scrollTop >= pre.scrollHeight - pre.offsetHeight - 100;
 
         if (scroll)
-            pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+            setTimeout(() => {
+                pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+            }, 10);
 
-        return null;
+        return textnode;
     }
 
     function firstTime() {
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
 
         twMain
+            .start()
+            .pasteString('                @@@@@@@@@               \n')
+            .pasteString('           @@@@@@@@@@@@@@@@@@@          \n')
+            .pasteString('       @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n')
+            .pasteString('     @@@@@@@@       &@      @@@@@@@@    \n')
+            .pasteString('   @@@@@@@            @       &@@@@@@@  \n')
+            .pasteString('  @@@@@@                         @@@@@@ \n')
+            .pasteString(' @@@@@@@                         @@@@@@@\n')
+            .pasteString(' @@@@@@@  &@@@@          &@@@@   @@@@@@@\n')
+            .pasteString(' @@@@@@@  &@@@@          &@@@@   @@@@@@@\n')
+            .pasteString(' @@@@@@@           @@@           @@@@@@@\n')
+            .pasteString(' @@@@@@@@@                    &@@@@@@@@@\n')
+            .pasteString('  @@@@@@@@@@@               @@@@@@@@@@@ \n')
+            .pasteString('   @@@@@@@@@@    @     @    @@@@@@@@@@  \n')
+            .pasteString('     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    \n')
+            .pasteString('       @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n')
+            .pasteString('           @@@@@@@@@@@@@@@@@@@          \n')
+            .pasteString('\n')
             .typeString('Welcome to Portfolio 23.01 LTS (GNU/Linux)\n\n')
+            .typeString('  * Github:    <i><a href="https://github.com/emanuele-toma" target="_blank">github.com/emanuele-toma</a></i>\n')
+            .typeString('  * LinkedIn:  <i><a href="https://www.linkedin.com/in/emanuele-toma" target="_blank">linkedin.com/in/emanuele-toma</a></i>\n')
+            .typeString('  * Contact:   <i><a href="mailto:emanuele@tomaemanuele.it" target="_blank">emanuele@tomaemanuele.it</a></i>\n\n')
+            .typeString('Total unique visits: ' + visits + (visits == 1 ? ' visit' : ' visits') + '\n\n');
 
-            .typeString('  * Github:    https://github.com/emanuele-toma\n')
-            .typeString('  * LinkedIn:  https://www.linkedin.com/in/emanuele-toma\n')
-            .typeString('  * Contact:   emanuele@tomaemanuele.it\n\n')
-            .typeString('Total unique visits: ' + visits + (visits == 1 ? ' visit' : ' visits') + '\n\n')
-            .callFunction(() => { menu() })
-            .start();
-
-        typeStringInstant('                @@@@@@@@@               \n')
-        typeStringInstant('           @@@@@@@@@@@@@@@@@@@          \n')
-        typeStringInstant('       @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n')
-        typeStringInstant('     @@@@@@@@       &@      @@@@@@@@    \n')
-        typeStringInstant('   @@@@@@@            @       &@@@@@@@  \n')
-        typeStringInstant('  @@@@@@                         @@@@@@ \n')
-        typeStringInstant(' @@@@@@@                         @@@@@@@\n')
-        typeStringInstant(' @@@@@@@  &@@@@          &@@@@   @@@@@@@\n')
-        typeStringInstant(' @@@@@@@  &@@@@          &@@@@   @@@@@@@\n')
-        typeStringInstant(' @@@@@@@           @@@           @@@@@@@\n')
-        typeStringInstant(' @@@@@@@@@                    &@@@@@@@@@\n')
-        typeStringInstant('  @@@@@@@@@@@               @@@@@@@@@@@ \n')
-        typeStringInstant('   @@@@@@@@@@    @     @    @@@@@@@@@@  \n')
-        typeStringInstant('     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    \n')
-        typeStringInstant('       @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n')
-        typeStringInstant('           @@@@@@@@@@@@@@@@@@@          \n\n')
-
-    }
-
-
-    function typeStringInstant(string) {
-        var pre = document.getElementById('testo');
-        var scroll = pre.scrollTop >= pre.scrollHeight - pre.offsetHeight - 2;
-        pre.innerHTML += string;
-        if (scroll)
-            pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+        menu();
     }
 
     function menu() {
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
-
-        typeStringInstant('########################################\n')
-        typeStringInstant('#  Choose an option                    #\n')
-        typeStringInstant('########################################\n')
-
         twMain
-            .typeString('#                                      #\n')
+            .pasteString('########################################\n')
+            .pasteString('#  Choose an option                    #\n')
+            .pasteString('########################################\n')
+            .pasteString('#                                      #\n')
             .typeString('#  1. About me                         #\n')
             .typeString('#  2. Projects                         #\n')
             .typeString('#  3. Skills                           #\n')
             .typeString('#  4. Education                        #\n')
             .typeString('#  5. Contact me                       #\n')
-            .typeString('#                                      #\n')
-            .typeString('########################################\n\n')
+            .pasteString('#                                      #\n')
+            .pasteString('########################################\n')
+            .pasteString('\n')
             .callFunction(() => { document.querySelector('#send').disabled = false })
             .start();
 
         return null;
     }
 
-    function clear() {
-        var pre = document.getElementById('testo');
-        pre.innerHTML = '';
+    function clearTesto() {
+        document.querySelector('.tw_testo').innerText = "";
     }
 
     async function GetVisits() {
@@ -353,11 +372,6 @@
     }
 
     function about_me() {
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
-
         twMain
             .typeString("Welcome to the 'About Me' page! Unfortunately, it looks like the developer is still working on filling out their own information. In the meantime, why not take a guess at what their favorite color is or what their spirit animal might be? Bonus points if you get both right!\n")
             .typeString("If you want to navigate around the website, you can always type a random character and hope for the best, Just like the developer does with their code")
@@ -366,11 +380,6 @@
     }
 
     function projects() {
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
-
         twMain
             .typeString("Welcome to the 'Projects' page! Unfortunately, it looks like the developer is still working on their portfolio. Maybe they're too busy coding to update it? In the meantime, feel free to browse the source code of your dreams.\n")
             .typeString("Stuck on this page? Don't worry, just fill the box below and see where it takes you! It's like a digital Choose Your Own Adventure.")
@@ -379,11 +388,6 @@
     }
 
     function skills() {
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
-
         twMain
             .typeString("Welcome to the 'Skills' page! Unfortunately, it looks like the developer is still working on updating their skillset. Maybe they're too busy learning new things to write them down? In the meantime, you can test your own skills by trying to guess how many programming languages they know.\n")
             .typeString("Not sure where to go next? Just write something and see were you end up!")
@@ -392,11 +396,6 @@
     }
 
     function education() {
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
-
         twMain
             .typeString("Welcome to the 'Education' page! Unfortunately, it looks like the developer is still working on adding their education history. Maybe they're too busy attending coding bootcamps to update it? In the meantime, you can take a guess at what school they went to or what degree they have.\n")
             .typeString("Feeling lost? Just write a bunch of characters and let the website take you on a journey!")
@@ -405,11 +404,6 @@
     }
 
     function contact_me() {
-        var twMain = new Typewriter(null, {
-            delay: 0,
-            onCreateTextNode: onCreateTextNode
-        });
-
         twMain
             .typeString("Welcome to the 'Contact Me' page! Unfortunately, it looks like the developer is still working on adding their contact information. Maybe they're too busy coding to answer their phone? In the meantime, you can try sending a message to their email address and hope for the best.\n")
             .typeString("Can't find the menu? Just type something and let the website be your guide!")

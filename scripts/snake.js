@@ -96,32 +96,9 @@ class Snake
             {
                 clearInterval(this.interval);
                 this.setLineHeight('');
-                
-                if (this.win)
-                    this.element.innerHTML = "Congratulations! You won!\n";
-                else
-                    this.element.innerHTML = "Game Over\n";
-
-                var highscore = localStorage.getItem('snake_highscore');
-                var previousScore = highscore;
-                if (highscore == null || highscore < this.score)
-                {
-                    localStorage.setItem('snake_highscore', this.score);
-                    this.element.innerHTML += "\nNew highscore!";
-                    this.element.innerHTML += "\nPrevious highscore: " + previousScore;
-                } else
-                {
-                    this.element.innerHTML += "\nHighscore: " + localStorage.getItem('snake_highscore');
-                }
-
-                this.element.innerHTML += "\nCurrent score: " + this.score;
-                this.element.innerHTML += "\n\nInsert coin to continue...";
-                this.element.innerHTML += "\nJust kidding, type 'snake' to play again\n";
-                this.element.innerHTML += "\nOr type anything else to exit...\n";
-
                 if (this.onGameOver != null && typeof this.onGameOver == 'function')
                 {
-                    this.onGameOver();
+                    this.onGameOver(this.score, this.win);
                     this.onDirectionChange = null;
                     this.onGameOver = null;
                 }
@@ -395,7 +372,7 @@ class Snake
     }
     
     getFitLines() {
-        var clone = this.element.cloneNode(true);
+        var clone = this.element.parentElement.cloneNode(true);
         clone.style.position = 'absolute';
         clone.style.visibility = 'hidden';
         clone.style.width = this.element.offsetWidth + 'px';
@@ -418,15 +395,15 @@ class Snake
     }
 
     setLineHeight(x) {
-        this.element.style.lineHeight = x;
+        this.element.parentElement.style.lineHeight = x;
 
         if (x == '') {
-            this.element.style.fontSize = '';
+            this.element.parentElement.style.fontSize = '';
             return;
         }
 
-        var fontSize = parseInt(window.getComputedStyle(this.element).fontSize);
-        this.element.style.fontSize = (parseInt(fontSize) * 2) + 'px';
+        var fontSize = parseInt(window.getComputedStyle(this.element.parentElement).fontSize);
+        this.element.parentElement.style.fontSize = (parseInt(fontSize) * 2) + 'px';
     }
 
     calcSpeed(x)
