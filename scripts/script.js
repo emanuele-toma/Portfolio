@@ -124,10 +124,11 @@
 
     document.querySelector('#prompt').addEventListener('click', (e) => {
         var pre = document.getElementById('testo');
-        pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
-        setTimeout(() => {
-            pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
-        }, 200);
+        // if scroll is at the bottom, scroll to the bottom
+        if (pre.scrollHeight - pre.clientHeight <= pre.scrollTop + 1)
+            setTimeout(() => {
+                pre.scrollTop = pre.scrollHeight - pre.clientHeight;
+            }, 200);
     });
 
     document.querySelector('#send').disabled = true;
@@ -303,13 +304,13 @@
 
     function onCreateTextNode(character, textnode) {
         var pre = document.getElementById('testo');
-        var scroll = pre.scrollTop >= pre.scrollHeight - pre.offsetHeight - 100;
-
-        if (scroll)
+        
+        if (pre.scrollHeight - pre.clientHeight <= pre.scrollTop + 1) {
             setTimeout(() => {
-                pre.scrollTop = pre.scrollHeight - pre.offsetHeight;
+                pre.scrollTop = pre.scrollHeight - pre.clientHeight;    
             }, 10);
-
+        }
+            
         return textnode;
     }
 
