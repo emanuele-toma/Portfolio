@@ -122,15 +122,6 @@
 
     let in_menu = true;
 
-    document.querySelector('#prompt').addEventListener('click', (e) => {
-        var pre = document.getElementById('testo');
-        // if scroll is at the bottom, scroll to the bottom
-        if (pre.scrollHeight - pre.clientHeight <= pre.scrollTop + 1)
-            setTimeout(() => {
-                pre.scrollTop = pre.scrollHeight - pre.clientHeight;
-            }, 200);
-    });
-
     document.querySelector('#send').disabled = true;
 
     document.querySelector('#send').addEventListener('click', (e) => {
@@ -313,6 +304,16 @@
             
         return textnode;
     }
+
+    document.querySelector('#prompt').addEventListener('click', (e) => {
+        var pre = document.querySelector('#testo');
+        const TIME_TO_LOAD_KEYBOARD = 200;
+        
+        if (pre.scrollHeight - pre.clientHeight <= pre.scrollTop + 1)
+            setTimeout(() => {
+                pre.scrollTop = pre.scrollHeight - pre.clientHeight;
+            }, TIME_TO_LOAD_KEYBOARD);
+    });
 
     function firstTime() {
 
