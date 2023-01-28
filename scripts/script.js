@@ -121,15 +121,223 @@
     ///////////////
 
     let in_menu = true;
+    let contact_menu = false;
+
+    contact_data = {
+        'name': null,
+        'email': null,
+        'message': null,
+        'captcha_id': null,
+        'captcha_solution': null
+    }
 
     document.querySelector('#send').disabled = true;
 
-    document.querySelector('#send').addEventListener('click', (e) => {
+    document.querySelector('#send').addEventListener('click', async (e) => {
         var prompt = document.querySelector('#prompt').value;
         document.querySelector('#prompt').value = '';
         document.querySelector('#send').disabled = true;
 
-        // if prompt is snake, start snake game
+        if (contact_menu == true) {
+
+            prompt = prompt.trim();
+
+            if (prompt == '$exit') {
+                contact_data = {
+                    'name': null,
+                    'email': null,
+                    'message': null,
+                    'captcha_id': null,
+                    'captcha_solution': null
+                }
+
+                contact_menu = false;
+                clearTesto();
+                menu();
+                return;
+            }
+
+            if (contact_data.name == null) {
+                if (prompt.length < 3) {
+                    twMain
+                        .typeString("Well, if your first name is that short then please at least add your last name...\n")
+                        .callFunction(() => { document.querySelector('#send').disabled = false; })
+                        .start();
+                    return;
+                }
+
+                if (prompt.length > 50) {
+                    twMain
+                        .typeString("You must be kidding me... Your parents must have hated you for giving a name that long!\n")
+                        .callFunction(() => { document.querySelector('#send').disabled = false; })
+                        .start();
+                    return;
+                }
+
+                if (/\d/.test(prompt)) {
+                    twMain
+                        .typeString("Unless you're the son of Elon Musk I don't think your name contains numbers.\n")
+                        .callFunction(() => { document.querySelector('#send').disabled = false; })
+                        .start();
+                    return;
+                }
+
+                contact_data.name = prompt;
+                twMain
+                    .typeString("You have passed the first test, now something harder.\n")
+                    .typeString("What's your email?\n")
+                    .callFunction(() => { document.querySelector('#send').disabled = false; })
+                    .start();
+                return;
+            }
+
+            if (contact_data.email == null) {
+                regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (!regex.test(prompt)) {
+                    twMain
+                        .typeString("Pretty sure you know what an email address looks like, just type yours so I can actually reply to you.\n")
+                        .callFunction(() => { document.querySelector('#send').disabled = false; })
+                        .start();
+
+                    return;
+                }
+
+                contact_data.email = prompt;
+                twMain
+                    .typeString("You're almost there, now just tell me what you want to say.\n")
+                    .callFunction(() => { document.querySelector('#send').disabled = false; })
+                    .start();
+
+                return;
+            }
+
+            if (contact_data.message == null) {
+                if (prompt.length < 10) {
+                    twMain
+                        .typeString("You can't be serious, you're not going to send me a message that short.\n")
+                        .callFunction(() => { document.querySelector('#send').disabled = false; })
+                        .start();
+
+                    return;
+                }
+
+                if (prompt.length > 1000) {
+                    twMain
+                        .typeString("You're not going to send me a message that long, I'm not going to read it.\n")
+                        .callFunction(() => { document.querySelector('#send').disabled = false; })
+                        .start();
+
+                    return;
+                }
+
+                if (!isNaN(prompt)) {
+                    twMain
+                        .typeString("You're not going to send me a message that's just a number, I'm not going to read it.\n")
+                        .callFunction(() => { document.querySelector('#send').disabled = false; })
+                        .start();
+
+                    return;
+                }
+
+                contact_data.message = prompt;
+
+                var captcha_text = null;
+
+                if (contact_data.captcha_id == null) {
+                    var captcha = await fetch('/captcha', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => response.json());
+
+                    captcha_text = captcha.text;
+                    contact_data.captcha_id = captcha.id;
+                }
+
+                twMain
+                    .typeString("Now it's the final stage, try beating the captcha and your message will be sent!\n")
+                    .typeString("\n")
+                    .typeString("Find the value of x in the following equation:\n")
+                    .typeString(captcha.text + "\n")
+                    .typeString("\n")
+                    .callFunction(() => { document.querySelector('#send').disabled = false; })
+                    .start();
+
+
+
+                return
+            }
+
+            if (contact_data.captcha_solution == null) {
+                var captcha_solution = prompt;
+
+                var response = await fetch('/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: contact_data.name,
+                        email: contact_data.email,
+                        message: contact_data.message,
+                        captcha_id: contact_data.captcha_id,
+                        captcha_solution: captcha_solution
+                    })
+                })
+                    .then(response => response.json());
+
+                if (response.success == true) {
+                    twMain
+                        .typeString("Thank you, the email has been sent. I'll try to reply to you ASAP!\n")
+                        .typeString("As always, you can type anything to go back to the main menu.\n")
+                        .callFunction(() => {
+                            document.querySelector('#send').disabled = false;
+                            contact_data = {
+                                'name': null,
+                                'email': null,
+                                'message': null,
+                                'captcha_id': null,
+                                'captcha_solution': null
+                            }
+
+                            contact_menu = false;
+                        })
+                        .start();
+                    return;
+                }
+
+                contact_data.captcha_id = null;
+                var captcha_text = null;
+
+                if (contact_data.captcha_id == null) {
+                    var captcha = await fetch('/captcha', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => response.json());
+
+                    contact_data.captcha_id = captcha.id;
+                    captcha_text = captcha.text;
+                }
+
+                twMain
+                    .typeString("The captcha was wrong, try again. I know you can do it!\n")
+                    .typeString("\n")
+                    .typeString("Find the value of x in the following equation:\n")
+                    .typeString(captcha.text + "\n")
+                    .typeString("\n")
+                    .callFunction(() => { document.querySelector('#send').disabled = false; })
+                    .start();
+
+                return;
+            }
+
+            return;
+        }
+
         if (prompt == 'snake') {
             clearTesto();
             in_menu = false;
@@ -140,8 +348,7 @@
         if (in_menu == false) {
             in_menu = true;
             clearTesto();
-            menu();
-            return;
+            return menu();
         }
 
         if (prompt == '')
@@ -295,20 +502,20 @@
 
     function onCreateTextNode(character, textnode) {
         var pre = document.getElementById('testo');
-        
+
         if (pre.scrollHeight - pre.clientHeight <= pre.scrollTop + 1) {
             setTimeout(() => {
-                pre.scrollTop = pre.scrollHeight - pre.clientHeight;    
+                pre.scrollTop = pre.scrollHeight - pre.clientHeight;
             }, 10);
         }
-            
+
         return textnode;
     }
 
     document.querySelector('#prompt').addEventListener('click', (e) => {
         var pre = document.querySelector('#testo');
         const TIME_TO_LOAD_KEYBOARD = 200;
-        
+
         if (pre.scrollHeight - pre.clientHeight <= pre.scrollTop + 1)
             setTimeout(() => {
                 pre.scrollTop = pre.scrollHeight - pre.clientHeight;
@@ -375,40 +582,117 @@
 
     function about_me() {
         twMain
-            .typeString("Welcome to the 'About Me' page! Unfortunately, it looks like the developer is still working on filling out their own information. In the meantime, why not take a guess at what their favorite color is or what their spirit animal might be? Bonus points if you get both right!\n")
-            .typeString("If you want to navigate around the website, you can always type a random character and hope for the best, Just like the developer does with their code")
+            .typeString("\n")
+            .typeString("Connecting to Police database...\n")
+            .pauseFor(1000)
+            .typeString("Connected!\n")
+            .typeString("Uploading custom payload...\n")
+            .typeString("Retrieving data...\n")
+            .typeString("Hacking complete!\n")
+            .pauseFor(1000)
+            .typeString("Targets found: 1 Target\n\n")
+            .pasteString("Full Name: Emanuele Toma\n")
+            .pasteString("Current Age: " + Math.floor((new Date() - new Date(2003, 11, 3)) / 31536000000) + "\n")
+            .pasteString("Occupation: Student\n\n")
+            .pasteString("Approximate Location: Bergamo, Italy\n")
+            .pasteString("Location Accuracy: 6km\n\n")
+            .pasteString("Eye Color: Brown\n")
+            .pasteString("Hair Color: Brown\n")
+            .pasteString("Height: 1.78m\n\n")
+            .pasteString("Police Record: None\n\n")
+            .pasteString("Interests: Programming, Music, Gaming, Web Development, Cybersecurity, Linux and more!\n")
+            .pasteString("Favourite Color: #CC8899\n")
+            .pasteString("Snake Highscore: 63 (Try beating it! Just type 'snake' to play!)\n")
+            .pasteString("Favourite Programming Language: Javascript\n")
+            .pasteString("Email: emanuele@tomaemanuele.it\n\n")
+            .pauseFor(3000)
+            .pasteString("Warning: Breach detected!\n\n")
+            .pauseFor(1000)
+            .typeString("Well, well, well, look who decided to take a little peek into my personal information!\n")
+            .typeString("I, the all-powerful developer, have intercepted your sneaky little hack attempt and have now successfully stolen all of your precious data.\n")
+            .typeString("You thought you could outsmart me?\n")
+            .typeString("Ha! I've got your name, age, occupation, location, physical characteristics, and even your interests and favorite colors.\n")
+            .typeString(localStorage.getItem('snake_highscore') !== null ? "Oh, and let's not forget about that impressive snake highscore of yours.\n" : "")
+            .typeString(localStorage.getItem('snake_highscore') !== null ? "I'll definitely have to challenge you to a game sometime.\n" : "")
+            .typeString("But don't worry, I won't tell the police about your little escapade.\n")
+            .typeString("Consider this a warning: never mess with a developer's information.\n")
+            .typeString("You have been warned.\n\n")
+            .typeString("Anyways if you want to get back to the main menu, just type something in the box below.\n")
             .callFunction(() => { document.querySelector('#send').disabled = false })
-            .start();
+            .start()
     }
 
     function projects() {
         twMain
-            .typeString("Welcome to the 'Projects' page! Unfortunately, it looks like the developer is still working on their portfolio. Maybe they're too busy coding to update it? In the meantime, feel free to browse the source code of your dreams.\n")
-            .typeString("Stuck on this page? Don't worry, just fill the box below and see where it takes you! It's like a digital Choose Your Own Adventure.")
+            .typeString("Looks like you stumbled upon my little corner of the internet where I showcase all of my awesome projects.\n")
+            .typeString("Let's see, we've got my <b>Portfolio</b>, where I flaunt my skills and interests to the world, built entirely in JavaScript and HTML.\n")
+            .typeString("Then there's <b>SubdomainProxy</b>, a slick little Node.js application that redirects requests based on the subdomain.\n")
+            .typeString("Moving on, I've got <b>GeoPopulation</b>, a handy tool that provides an API for extracting random coordinates from around the world, all built with Python.\n")
+            .typeString("And let's not forget about <b>Tomessenger</b>, my simple server chat using sockets.\n")
+            .typeString("Or <b>MirrorView</b>, my template engine for JS that uses syntax similar to PHP.\n\n")
+            .typeString("All in all, a pretty impressive lineup if I do say so myself.\n\n")
+            .typeString("But don't take my word for it, why don't you check them out for yourself?\n")
+            .typeString("Now, you may be thinking to yourself, 'wow, this developer sure has a lot of impressive projects.'\n")
+            .typeString("But, hold your horses there buddy, because this list might be incomplete.\n")
+            .typeString("You see, I am a developer, and as all developers know, we can be quite lazy at times.\n")
+            .typeString("So, don't be surprised if you don't find all of my projects listed here.\n")
+            .typeString("But fear not, because I've left a little surprise for you.\n\n")
+            .typeString("If you're feeling adventurous, go on a hunt for my super secret Easter egg.\n")
+            .typeString("It'll take you on a journey through my <a href=\"https://github.com/emanuele-toma\" target\"_blank\">Github</a> activity in 2021, where you'll find something waiting for you.\n")
+            .typeString("Good luck, and happy hunting!\n\n")
+            .typeString("You might want to go back to the main menu, if that's what you're looking for, just type something in the box below.\n")
             .callFunction(() => { document.querySelector('#send').disabled = false })
             .start();
     }
 
     function skills() {
         twMain
-            .typeString("Welcome to the 'Skills' page! Unfortunately, it looks like the developer is still working on updating their skillset. Maybe they're too busy learning new things to write them down? In the meantime, you can test your own skills by trying to guess how many programming languages they know.\n")
-            .typeString("Not sure where to go next? Just write something and see were you end up!")
+            .typeString("Ladies and gentlemen, step right up and behold the skills of the one and only developer!\n")
+            .typeString("I am a programming wizard, with proficiency in C#, Python, Javascript, HTML (Not an actual programming language), and CSS.\n")
+            .typeString("For the entire list just visit my Github profile, I\'m too lazy to type it all out.\n")
+            .typeString("I can speak English and Italian fluently, so communication is never an issue.\n")
+            .typeString("But it's not just technical skills that I possess, oh no.\n")
+            .typeString("I am also a master of soft skills, such as teamwork, problem solving, adaptability, conflict management, and time management.\n")
+            .typeString("I am the complete package, the whole enchilada, the cherry on top of the sundae.\n")
+            .typeString("With me on your team, you'll be laughing all the way to the bank, or at least laughing at my terrible jokes.\n\n")
+            .typeString("Maybe you're lost, or maybe not. Either way, you can always go back to the main menu by typing something in the box below.\n")
             .callFunction(() => { document.querySelector('#send').disabled = false })
             .start();
     }
 
     function education() {
         twMain
-            .typeString("Welcome to the 'Education' page! Unfortunately, it looks like the developer is still working on adding their education history. Maybe they're too busy attending coding bootcamps to update it? In the meantime, you can take a guess at what school they went to or what degree they have.\n")
-            .typeString("Feeling lost? Just write a bunch of characters and let the website take you on a journey!")
+            .typeString("Ah, the education section.")
+            .typeString("The place where I tell you all about my time at the Hogwarts of computer science, otherwise known as I.T.I.S. Pietro Paleocapa in Bergamo, Italy.\n")
+            .typeString("I spent 6 long years there, and let me tell you, it felt like an eternity.\n")
+            .typeString("But, in all seriousness, it was an amazing experience.\n")
+            .typeString("Everyone knew me thought i was like a computer science wizard, which sounds impressive, but really just means that whenever anyone had a problem with their computer, they would come to me.\n")
+            .typeString("But, I digress.\n")
+            .typeString("The main courses of study during my time there were networking, C# desktop and Asp.net, with a smattering of C++ and Java.\n")
+            .typeString("Unfortunately, there were almost no girls in the school, but I suppose that's just the price you pay for being a computer science wizard.")
+            .typeString("Overall, my education at the computer science high school in Bergamo, Italy, was a crucial step in my journey to becoming the highly skilled and well-rounded developer that I am today.\n")
+            .typeString("But, I'm sure you're wondering, what about my education after high school?\n")
+            .typeString("Well, I'm glad you asked.\n")
+            .typeString("I haven't actually started university yet, but I'm planning on studying computer science at the Bicocca University in Milan.\n")
+            .typeString("Either that or I'll just keep coding and hope for the best.\n\n")
+            .typeString("Bored yet? Well, you can always go back to the main menu by typing something in the box below.\n")
             .callFunction(() => { document.querySelector('#send').disabled = false })
             .start();
     }
 
     function contact_me() {
         twMain
-            .typeString("Welcome to the 'Contact Me' page! Unfortunately, it looks like the developer is still working on adding their contact information. Maybe they're too busy coding to answer their phone? In the meantime, you can try sending a message to their email address and hope for the best.\n")
-            .typeString("Can't find the menu? Just type something and let the website be your guide!")
+            .typeString("Welcome to the contact me section!\n")
+            .typeString("This is where you can reach out to your favorite developer and tell them all about your amazing ideas, job offers, or just to say hi.\n")
+            .typeString("Just fill out your name, email, and message, and then complete the weird captcha.\n")
+            .typeString("If you're lucky, I'll actually receive your message and respond back to you.\n")
+            .typeString("But beware, if you make any mistakes, the website might get angry and you'll never hear from me again.\n")
+            .typeString("And let's not forget about the weird captcha, it's like a test to see if you're actually a real person or just a robot trying to spam me.\n")
+            .typeString("So, go ahead and give it a shot, and let's see if you have what it takes to reach out to me.\n\n")
+            .typeString("If you change your mind, you can always go back to the main menu by typing '$exit' in the box below.\n")
+            .typeString("I know, I know, you aren't used to type something specific, but trust me, typing '$exit' to go back to the main menu is way more exciting than just typing some random stuff.\n\n")
+            .typeString("Let's start with something simple, what's your name?\n")
+            .callFunction(() => { contact_menu = true })
             .callFunction(() => { document.querySelector('#send').disabled = false })
             .start();
     }
