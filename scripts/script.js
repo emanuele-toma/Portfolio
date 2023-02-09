@@ -662,14 +662,14 @@
 
     function education() {
         twMain
-            .typeString("Ah, the education section.")
+            .typeString("Ah, the education section.\n")
             .typeString("The place where I tell you all about my time at the Hogwarts of computer science, otherwise known as I.T.I.S. Pietro Paleocapa in Bergamo, Italy.\n")
             .typeString("I spent 6 long years there, and let me tell you, it felt like an eternity.\n")
             .typeString("But, in all seriousness, it was an amazing experience.\n")
             .typeString("Everyone knew me thought i was like a computer science wizard, which sounds impressive, but really just means that whenever anyone had a problem with their computer, they would come to me.\n")
             .typeString("But, I digress.\n")
             .typeString("The main courses of study during my time there were networking, C# desktop and Asp.net, with a smattering of C++ and Java.\n")
-            .typeString("Unfortunately, there were almost no girls in the school, but I suppose that's just the price you pay for being a computer science wizard.")
+            .typeString("Unfortunately, there were almost no girls in the school, but I suppose that's just the price you pay for being a computer science wizard.\n")
             .typeString("Overall, my education at the computer science high school in Bergamo, Italy, was a crucial step in my journey to becoming the highly skilled and well-rounded developer that I am today.\n")
             .typeString("But, I'm sure you're wondering, what about my education after high school?\n")
             .typeString("Well, I'm glad you asked.\n")
