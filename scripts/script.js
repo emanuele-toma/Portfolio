@@ -601,7 +601,7 @@
             .pasteString("Height: 1.78m\n\n")
             .pasteString("Police Record: None\n\n")
             .pasteString("Interests: Programming, Music, Gaming, Web Development, Cybersecurity, Linux and more!\n")
-            .pasteString("Favourite Color: #CC8899\n")
+            .pasteString("Favourite Color: #5D3FD3\n")
             .pasteString("Snake Highscore: 63 (Try beating it! Just type 'snake' to play!)\n")
             .pasteString("Favourite Programming Language: Javascript\n")
             .pasteString("Email: emanuele@tomaemanuele.it\n\n")
