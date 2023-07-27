@@ -673,7 +673,7 @@
             .typeString("Overall, my education at the computer science high school in Bergamo, Italy, was a crucial step in my journey to becoming the highly skilled and well-rounded developer that I am today.\n")
             .typeString("But, I'm sure you're wondering, what about my education after high school?\n")
             .typeString("Well, I'm glad you asked.\n")
-            .typeString("I haven't actually started university yet, but I'm planning on studying computer science at the Bicocca University in Milan.\n")
+            .typeString("I haven't actually started university yet, but I'm planning on studying cloud computing at JobsAcademy ITS in San Paolo D'Argon (BG).\n")
             .typeString("Either that or I'll just keep coding and hope for the best.\n\n")
             .typeString("Bored yet? Well, you can always go back to the main menu by typing something in the box below.\n")
             .callFunction(() => { document.querySelector('#send').disabled = false })
